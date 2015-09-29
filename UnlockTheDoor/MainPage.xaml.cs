@@ -1,4 +1,5 @@
 ﻿/*
+ Based on Blinky Demo
     Copyright(c) Microsoft Open Technologies, Inc. All rights reserved.
 
     The MIT License(MIT)
@@ -176,7 +177,7 @@ namespace UnlockTheDoor
                 Dictionary<string, string> properties = new Dictionary<string, string>();
 
                 properties.Add("Device", "RaspberryPi");
-                var response = await SendMessage("https://recnepstest.servicebus.windows.net/", topic, token, "PiInitialised", properties);
+                var response = await SendMessage("https://<yournamespace>.servicebus.windows.net/", topic, token, "PiInitialised", properties);
                 if(response != null && response.IsSuccessStatusCode )
                 {
                     // stop trying to send a message on the service bus
@@ -245,7 +246,7 @@ namespace UnlockTheDoor
                     properties.Add("Priority", "High");
                     properties.Add("MessageType", "Command");
                     properties.Add("Command", "BingBong");
-                    SendMessage("https://recnepstest.servicebus.windows.net/", topic, token, "BingBong", properties);
+                    SendMessage("https://<yournamespace>.servicebus.windows.net/", topic, token, "BingBong", properties);
                 }
                 catch (Exception ex)
                 {
@@ -293,13 +294,13 @@ namespace UnlockTheDoor
                             ct.ThrowIfCancellationRequested();
                         }
 
-                        string token = GetSASToken("https://recnepstest.servicebus.windows.net/", user, key);
+                        string token = GetSASToken("https://<yournamespace>.servicebus.windows.net/", user, key);
 
                         Dictionary<string, string> properties = new Dictionary<string, string>();
 
                         properties.Add("Priority", "High");
                         properties.Add("MessageType", "Command");
-                        string message = await ReceiveAndDeleteMessageFromSubscription("https://recnepstest.servicebus.windows.net/", topic, subscription, token, null);
+                        string message = await ReceiveAndDeleteMessageFromSubscription("https://<yournamespace>.servicebus.windows.net/", topic, subscription, token, null);
 
                         if (message.Contains("Unlock"))
                         {
@@ -398,10 +399,7 @@ namespace UnlockTheDoor
 
         private IDictionary<string, string> GetConnectionStringParts(string connectionString)
         {
-            // extract the base address, SASKeyName and SASKeyvalue from the connection string
-            //Endpoint=sb://recnepstest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=/4HVXOoz+nMLO3j0LQibBLtIKYk/JNWPAcRGmthR7rA="
-
-            string[] connectionStringParts = connectionString.Split(';');
+             string[] connectionStringParts = connectionString.Split(';');
             string baseaddress = connectionStringParts[0].Replace("Endpoint=", "");
             baseaddress = baseaddress.Replace("sb://", "https://");
             string sharedAccessKeyName = connectionStringParts[1].Replace("SharedAccessKeyName=", "");
@@ -455,12 +453,12 @@ namespace UnlockTheDoor
         private SolidColorBrush redBrush = new SolidColorBrush(Windows.UI.Colors.Red);
         private SolidColorBrush grayBrush = new SolidColorBrush(Windows.UI.Colors.LightGray);
         #region constants
-        private const string ConnectionString = "Endpoint = sb://recnepstest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=/4HVXOoz+nMLO3j0LQibBLtIKYk/JNWPAcRGmthR7rA=";
+        private const string ConnectionString = "Endpoint = sb://<yournamespace>.servicebus.windows.net/;SharedAccessKeyName=<YourUserFromAzureServiceBusPortal>;SharedAccessKey=<YourKeyFromAzureServiceBusPortal>";
         private const string topic = "testtopic";
         private const string subscription = "RaspberryPi2";
-        private const string baseAddress = "https://recnepstest.servicebus.windows.net/";
-        private const string user = "RootManageSharedAccessKey";
-        private const string key = "/4HVXOoz+nMLO3j0LQibBLtIKYk/JNWPAcRGmthR7rA=";
+        private const string baseAddress = "https://<yournamespace>.servicebus.windows.net/";
+        private const string user = "<YourUserFromAzureServiceBusPortal>";
+        private const string key = "<YourKeyFromAzureServiceBusPortal>";
         private bool isManualUnlock = false;
         private int manualUnlockCount = 0;
 
